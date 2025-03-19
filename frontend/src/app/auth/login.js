@@ -1,8 +1,9 @@
 import { router, useLocalSearchParams } from "expo-router"
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native"
+import { ScrollView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native"
 import * as Animatable from "react-native-animatable"
 import axios from 'axios'
 import { useState } from 'react'
+
 
 export default function Login() {
 const { name } = useLocalSearchParams()
@@ -11,6 +12,9 @@ const [email, setEmail] = useState('');
 const [password, setPassword] = useState('');
 const [loading, setLoading] = useState(false);
 
+const recuperarSenha = () => {
+    router.push("/auth/recuperar-senha")
+} 
 
     function back () {
         router.back()
@@ -22,8 +26,8 @@ const enviaLogin = async () => {
         return;
 }
 
-const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
-if (!emailRegex.test(email)) {
+const emailValido = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+if (!emailValido.test(email)) {
   alert('Por favor, insira um email válido.')
   return
 }
@@ -43,28 +47,34 @@ setLoading(true);
 
     } catch (error) {
         console.error(error);
-        alert('Erro no login. Verifique seus dados e tente novamente.');
+        alert('Erro no login. Verifique seus dados e tente novamente.'); //tirar o alert depois
       } finally {
         setLoading(false);
       }
     };
 
     return (
-        <View style={styles.container}>
-
-            <Animatable.View animation="fadeInLeft" delay={500} style={styles.Header}>
+        <SafeAreaView style={styles.container}>
+            <Animatable.View 
+                animation="fadeInLeft" 
+                delay={500} 
+                style={styles.Header}
+            >
                 <Text style={styles.message}>Bem vindo (a)</Text>
             </Animatable.View>
-
-            <Animatable.View animation="fadeInUp" style={styles.containerForm}>
+    
+            <Animatable.View 
+                animation="fadeInUp" 
+                style={styles.containerForm}
+            >
                 <Text style={styles.title}>Email</Text>
                 <TextInput
                     placeholder="Digite um Email.."
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
+                    keyboardType="email-address" 
                 />
-
                 <Text style={styles.title}>Senha</Text>
                 <TextInput
                     placeholder="Sua senha"
@@ -73,31 +83,39 @@ setLoading(true);
                     value={password}
                     onChangeText={setPassword}
                 />
-
+                <Text style={styles.textEsqueceuSenha} onPress={recuperarSenha}>
+                    Esqueceu sua senha?
+                </Text>
                 <TouchableOpacity 
-                style={styles.button} 
-                onPress={enviaLogin}
+                    style={styles.button} 
+                    onPress={enviaLogin}
                 >
-                    <Text style={styles.buttonText}>{loading ? 'Acessando...' : 'Acessar'}</Text>
+                    <Text style={styles.buttonText}>
+                        {loading ? 'Acessando...' : 'Acessar'}
+                    </Text>
                 </TouchableOpacity>
-
+    
                 <TouchableOpacity 
-                style={styles.buttonRegister}
-                onPress={() => router.push("/auth/register")}
+                    style={styles.buttonRegister}
+                    onPress={() => router.push("/auth/register")}
                 >
-                    <Text style={styles.registerText}>Não possui uma conta? Cadastre-se</Text>
+                   <Text style={styles.registerText}>
+                        Não possui uma conta? <Text style={styles.registerCad}>Cadastre-se</Text>
+                    </Text>
+ 
                 </TouchableOpacity>
-
             </Animatable.View>
-
-            <TouchableOpacity style={styles.button2} onPress={back}>
+    
+            <TouchableOpacity 
+                style={styles.button2} 
+                onPress={back}
+            >
                 <Text>{name}</Text>
                 <Text style={styles.buttonTextVolt}>voltar</Text>
             </TouchableOpacity>   
-
-        </View>
- 
+        </SafeAreaView>
     )
+ 
 }{/*método imperativo*/}
 
 const styles = StyleSheet.create ({
@@ -170,6 +188,10 @@ const styles = StyleSheet.create ({
         alignSelf: "center",
     },
     registerText: {
+        color: "#c3c3c3",
+        fontWeight: "bold",
+    },
+    registerCad: {
         color: "#871F78",
     },
     back: { 
@@ -181,4 +203,9 @@ const styles = StyleSheet.create ({
         justifyContent: "center",
         alignItems: "center",
     },
+    textEsqueceuSenha: {
+        color: "#c3c3c3",
+        fontSize: 14,
+        fontWeight: "bold",
+    }
 }) 

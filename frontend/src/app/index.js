@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native"
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native"
 import { router } from "expo-router"
 import React from "react"
 import * as Animatable from "react-native-animatable"
@@ -7,7 +7,7 @@ export default function Index() {
     function Login() {
         router.navigate("/auth/login")
     }
-
+    
     return (
         <View style={styles.container}>
             <View style={styles.containerLogo}>
@@ -21,7 +21,7 @@ export default function Index() {
             <Animatable.View delay={600} animation="fadeInUp" style={styles.containerForm}>
                 <Text style={styles.title}>Onde a música encontra a parceria ideal!</Text>
                 <Text style={styles.text}>Faça o login para começar</Text>
-
+              
                 <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={Login}>
                     <Text style={styles.label}>Acessar</Text>
                 </TouchableOpacity>

@@ -1,13 +1,54 @@
 import { router, useLocalSearchParams } from "expo-router"
 import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native"
 import * as Animatable from "react-native-animatable"
+import axios from 'axios'
+import { useState } from 'react'
 
 export default function Login() {
 const { name } = useLocalSearchParams()
 
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const [loading, setLoading] = useState(false);
+
+
     function back () {
         router.back()
     }
+
+const enviaLogin = async () => {
+    if (!email || !password) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+}
+
+const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+if (!emailRegex.test(email)) {
+  alert('Por favor, insira um email válido.')
+  return
+}
+
+setLoading(true); 
+
+    try {
+      const response = await axios.post('http://192.168.58.167:3000/login', {
+        email,
+        password
+      });
+
+      console.log(response.data); 
+      alert('Login bem-sucedido'); //tirar o alert depois
+
+      router.push("/telas/home"); 
+
+    } catch (error) {
+        console.error(error);
+        alert('Erro no login. Verifique seus dados e tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     return (
         <View style={styles.container}>
 
@@ -20,19 +61,30 @@ const { name } = useLocalSearchParams()
                 <TextInput
                     placeholder="Digite um Email.."
                     style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
                 />
 
                 <Text style={styles.title}>Senha</Text>
                 <TextInput
                     placeholder="Sua senha"
                     style={styles.input}
+                    secureTextEntry 
+                    value={password}
+                    onChangeText={setPassword}
                 />
 
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Acessar</Text>
+                <TouchableOpacity 
+                style={styles.button} 
+                onPress={enviaLogin}
+                >
+                    <Text style={styles.buttonText}>{loading ? 'Acessando...' : 'Acessar'}</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonRegister}>
+                <TouchableOpacity 
+                style={styles.buttonRegister}
+                onPress={() => router.push("/auth/register")}
+                >
                     <Text style={styles.registerText}>Não possui uma conta? Cadastre-se</Text>
                 </TouchableOpacity>
 
@@ -129,4 +181,4 @@ const styles = StyleSheet.create ({
         justifyContent: "center",
         alignItems: "center",
     },
-})
+}) 

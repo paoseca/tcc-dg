@@ -34,7 +34,7 @@ export default function RecuperarSenha() {
 
       console.log(response.data);
       alert("Instruções de recuperação de senha enviadas com sucesso.");
-      // Após enviar, redireciona o usuário para a tela de login (ou outra tela que desejar)
+      // Após enviar, redireciona o usuário para a tela de login 
       router.push("/auth/login");
     } catch (error) {
       console.error(error);
@@ -44,7 +44,7 @@ export default function RecuperarSenha() {
     }
   };
 
-  // Função para retornar à tela anterior (por exemplo, a tela de login)
+  // Função para retornar à tela anterior 
   const back = () => {
     router.back();
   };
@@ -62,7 +62,7 @@ export default function RecuperarSenha() {
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          keyboardType="email-address" // (Este parâmetro indica que o teclado exibirá o layout apropriado para digitação de emails)
+          keyboardType="email-address" // (Parametro qure indica que o teclado exibirá o layout apropriado para digitação de emails)
         />
         <TouchableOpacity style={styles.button} onPress={enviaRecuperacao}>
           <Text style={styles.buttonText}>{loading ? "Enviando..." : "Enviar"}</Text>

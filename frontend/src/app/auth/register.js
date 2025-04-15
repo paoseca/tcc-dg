@@ -8,18 +8,26 @@ export default function Register() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
 
   const cadastrar = async () => {
-    if (!nome || !email || !telefone) {
+    if (!nome || !email || !telefone || !senha || !confirmarSenha) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
 
+    if (senha !== confirmarSenha) {
+      alert("As senhas não coincidem.");
+      return;
+    }
+
     try {
-      const response = await axios.post('http://192.168.58.167:3000/usuarios', {
+      const response = await axios.post('http://192.168.58.167:3000/register', {
         nome,
         email,
-        telefone
+        telefone,
+        senha,
       });
 
       console.log(response.data);
@@ -62,6 +70,24 @@ export default function Register() {
           keyboardType="phone-pad"
           value={telefone}
           onChangeText={setTelefone}
+        />
+
+        <Text style={styles.title}>Senha</Text>
+        <TextInput
+          placeholder="Digite sua senha"
+          style={styles.input}
+          secureTextEntry
+          value={senha}
+          onChangeText={setSenha}
+        />
+
+        <Text style={styles.title}>Confirmar Senha</Text>
+        <TextInput
+          placeholder="Confirme sua senha"
+          style={styles.input}
+          secureTextEntry
+          value={confirmarSenha}
+          onChangeText={setConfirmarSenha}
         />
 
         <TouchableOpacity style={styles.button} onPress={cadastrar}>

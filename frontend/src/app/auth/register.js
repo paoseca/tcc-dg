@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { ScrollView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import * as Animatable from "react-native-animatable";
-import axios from 'axios';
 import { useState } from 'react';
+import api from "../api/api";
 
 export default function Register() {
   const [nome, setNome] = useState('');
@@ -21,18 +21,18 @@ export default function Register() {
       alert("As senhas não coincidem.");
       return;
     }
-
+    
     try {
-      const response = await axios.post('http://192.168.58.167:3000/register', {
+      const response = await api.post('/register', {
         nome,
         email,
         telefone,
         senha,
       });
 
-      console.log(response.data);
       alert('Cadastro realizado com sucesso!');
       router.push('/auth/login');
+      return
     } catch (error) {
       console.error(error);
       alert('Erro ao cadastrar. Tente novamente.');
@@ -163,3 +163,4 @@ const styles = StyleSheet.create({
     color: "#871F78",
   },
 });
+

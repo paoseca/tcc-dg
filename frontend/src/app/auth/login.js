@@ -3,6 +3,7 @@ import { ScrollView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity
 import * as Animatable from "react-native-animatable";
 import axios from 'axios';
 import { useState } from 'react';
+import api from "../api/api";
 
 export default function Login() {
   const { name } = useLocalSearchParams();
@@ -34,13 +35,12 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://192.168.58.167:3000/login', {
+      const response = await api.post('/login', {
         email,
         senha 
       });
 
       console.log(response.data);
-      alert('Login bem-sucedido'); // pode remover depois
       router.push("/telas/home");
 
     } catch (error) {
@@ -205,3 +205,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   }
 });
+

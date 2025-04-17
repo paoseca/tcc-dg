@@ -4,6 +4,7 @@ CREATE TABLE Usuario (
     cpf VARCHAR(11) PRIMARY KEY,      
     nome VARCHAR(100) NOT NULL,   
     email VARCHAR(100) NOT NULL UNIQUE, 
+    senha cpf VARCHAR(100)
     telefone VARCHAR(15),
     tipo ENUM('comum', 'musico') NOT NULL
 );

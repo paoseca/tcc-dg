@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
-import * as Animatable from "react-native-animatable";
-import axios from 'axios';
+import * as Animatable from "react-native-animatable"; // animação
+import axios from 'axios'; // para requisições HTTP
 import { useState } from 'react';
 import api from "../api/api";
 
@@ -10,29 +10,33 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
+  // Direcionar para a tela de recuperação de senha
   const recuperarSenha = () => {
     router.push("/auth/recuperar-senha");
   };
 
-  function back() {
+  // Voltar para a tela anterior
+  function voltar() {
     router.back();
   }
 
+  // Envia os dados do login para o backend
   const enviaLogin = async () => {
     if (!email || !senha) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
 
-    const emailValido = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const emailValido = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+
     if (!emailValido.test(email)) {
       alert('Por favor, insira um email válido.');
       return;
     }
 
-    setLoading(true);
+    setLoading(true); 
 
     try {
       const response = await api.post('/login', {
@@ -47,89 +51,101 @@ export default function Login() {
       console.error(error);
       alert('Erro no login. Verifique seus dados e tente novamente.');
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.telaLogin}>
+      {/* Animação do cabeçalho */}
       <Animatable.View
         animation="fadeInLeft"
         delay={500}
-        style={styles.Header}
+        style={styles.cabecalho}
       >
-        <Text style={styles.message}>Bem vindo (a)</Text>
+        <Text style={styles.mensagemBoasVindas}>Bem-vindo(a)!</Text>
       </Animatable.View>
 
+      {/* Formulário animado */}
       <Animatable.View
         animation="fadeInUp"
-        style={styles.containerForm}
+        style={styles.areaFormulario}
       >
-        <Text style={styles.title}>Email</Text>
+        {/* Campo de Email */}
+        <Text style={styles.tituloCampo}>Email</Text>
         <TextInput
-          placeholder="Digite um Email.."
-          style={styles.input}
+          placeholder="Digite seu email"
+          style={styles.campoTexto}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
         />
-        <Text style={styles.title}>Senha</Text>
+
+        {/* Campo de Senha */}
+        <Text style={styles.tituloCampo}>Senha</Text>
         <TextInput
-          placeholder="Sua senha"
-          style={styles.input}
+          placeholder="Digite sua senha"
+          style={styles.campoTexto}
           secureTextEntry
           value={senha}
           onChangeText={setSenha}
         />
-        <Text style={styles.textEsqueceuSenha} onPress={recuperarSenha}>
+
+        {/* Link para recuperar senha */}
+        <Text style={styles.textoEsqueceuSenha} onPress={recuperarSenha}>
           Esqueceu sua senha?
         </Text>
+
+        {/* Botão "Acessar" */}
         <TouchableOpacity
-          style={styles.button}
+          style={styles.botaoLogin}
           onPress={enviaLogin}
         >
-          <Text style={styles.buttonText}>
+          <Text style={styles.textoBotaoLogin}>
             {loading ? 'Acessando...' : 'Acessar'}
           </Text>
         </TouchableOpacity>
 
+        {/* Botão "Cadastre-se" */}
         <TouchableOpacity
-          style={styles.buttonRegister}
+          style={styles.botaoCadastro}
           onPress={() => router.push("/auth/register")}
         >
-          <Text style={styles.registerText}>
-            Não possui uma conta? <Text style={styles.registerCad}>Cadastre-se</Text>
+          <Text style={styles.textoCadastro}>
+            Não possui uma conta? <Text style={styles.textoCadastreSe}>Cadastre-se</Text>
           </Text>
         </TouchableOpacity>
       </Animatable.View>
 
+      {/* Botão "Voltar" */}
       <TouchableOpacity
-        style={styles.button2}
-        onPress={back}
+        style={styles.botaoVoltar}
+        onPress={voltar}
       >
         <Text>{name}</Text>
-        <Text style={styles.buttonTextVolt}>voltar</Text>
+        <Text style={styles.textoBotaoVoltar}>Voltar</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
-  container: {
+  telaLogin: {
     flex: 1,
     backgroundColor: "#871F78",
   },
-  Header: {
+  cabecalho: {
     marginTop: "14%",
     marginBottom: "8%",
     paddingStart: "5%",
   },
-  message: {
+  mensagemBoasVindas: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
   },
-  containerForm: {
+  areaFormulario: {
     backgroundColor: "#fff",
     flex: 1,
     borderTopLeftRadius: 25,
@@ -137,17 +153,17 @@ const styles = StyleSheet.create({
     paddingStart: "5%",
     paddingEnd: "5%",
   },
-  title: {
+  tituloCampo: {
     fontSize: 20,
     marginTop: 25,
   },
-  input: {
+  campoTexto: {
     borderBottomWidth: 1,
     height: 40,
     marginBottom: 12,
     fontSize: 16,
   },
-  button: {
+  botaoLogin: {
     backgroundColor: "#871F78",
     width: "100%",
     borderRadius: 10,
@@ -156,7 +172,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  button2: {
+  textoBotaoLogin: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  botaoVoltar: {
     backgroundColor: "#fff",
     width: "25%",
     borderRadius: 15,
@@ -168,41 +189,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: 'row',
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  buttonTextVolt: {
+  textoBotaoVoltar: {
     color: "#871F78",
     fontSize: 18,
     fontWeight: "bold",
     marginRight: 8,
   },
-  buttonRegister: {
+  botaoCadastro: {
     marginTop: 14,
     alignSelf: "center",
   },
-  registerText: {
+  textoCadastro: {
     color: "#c3c3c3",
     fontWeight: "bold",
   },
-  registerCad: {
+  textoCadastreSe: {
     color: "#871F78",
   },
-  back: {
-    backgroundColor: "#fff",
-    width: "100%",
-    borderRadius: 10,
-    paddingVertical: 8,
-    marginTop: 14,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textEsqueceuSenha: {
+  textoEsqueceuSenha: {
     color: "#c3c3c3",
     fontSize: 14,
     fontWeight: "bold",
   }
 });
-

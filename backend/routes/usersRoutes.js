@@ -97,8 +97,6 @@ router.post('/register', async (req, res) => {
   });
 
 
-  //---------------------------
-
 // Rota de login
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
@@ -107,21 +105,34 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ message: 'Email e senha são obrigatórios!' });
   }
 
-  const usuario = usersbd.find(user => user.email === email);
+  try {
+    const [rows] = await connection.query('SELECT * FROM Usuario WHERE email = ?', [email]);
 
-  if (!usuario) {
-    // return res.status(401).json({ message: 'Email ou senha incorretos' });
-    return res.status(401).json({ message: 'Email incorretos' });
+    if (rows.length === 0) {
+      return res.status(401).json({ message: 'Email ou senha incorretos.' });
+    }
+
+    const usuario = rows[0];
+
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+    if (!senhaCorreta) {
+      return res.status(401).json({ message: 'Email ou senha incorretos.' });
+    }
+
+    return res.status(200).json({
+      message: 'Login realizado com sucesso!',
+      usuario: {
+        cpf: usuario.cpf,
+        nome: usuario.nome,
+        email: usuario.email,
+        telefone: usuario.telefone,
+        tipo: usuario.tipo
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao fazer login:', err);
+    return res.status(500).json({ message: 'Erro interno do servidor.' });
   }
-
-  const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
-
-  if (!senhaCorreta) {
-    // return res.status(401).json({ message: 'Email ou senha incorretos' });
-    return res.status(401).json({ message: 'senha incorretos' });
-  }
-
-  res.status(200).json({ message: 'Login bem-sucedido!', usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email } });
 });
 
 export default router;

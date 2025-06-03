@@ -60,7 +60,37 @@ router.post('/register', async (req, res) => {
     return res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 });
-  
+
+router.post('/register-musico', async (req, res) => {
+  const { cpf_usuario, instrumentos, localizacao, descricao } = req.body;
+
+  if (!cpf_usuario || !instrumentos) {
+    return res.status(400).json({ message: 'CPF do usuário e instrumentos são obrigatórios!' });
+  }
+
+  try {
+    const [user] = await connection.query(
+      'SELECT * FROM Usuario WHERE cpf = ? AND tipo = ?',
+      [cpf_usuario, 'musico']
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: 'Usuário músico não encontrado!' });
+    }
+
+    // Atualizado: sem a coluna "avaliacao"
+    await connection.query(
+      'INSERT INTO Musico (cpf_usuario, instrumentos, localizacao, descricao) VALUES (?, ?, ?, ?)',
+      [cpf_usuario, instrumentos, localizacao || null, descricao || null]
+    );
+
+    return res.status(201).json({ message: 'Dados do músico cadastrados com sucesso!' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+});
+
   // Rota para atualizar um usuário
   router.put('/users/:id', async (req, res) => {
     const { id } = req.params;

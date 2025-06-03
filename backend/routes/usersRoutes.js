@@ -1,25 +1,7 @@
 import { Router } from "express";
+import connection from '../database/connection.js';
 const router = Router();
 import bcrypt from 'bcrypt';
-
-const usersbd = [
-    {
-      id: Math.random().toString(36).substring(2, 15),
-      nome: 'Lucas',
-      cpf: '12345678900',
-      email: 'bob@email.com',
-      telefone: '11987654321',
-      senha: 123456,
-    },
-    {
-      id: Math.random().toString(36).substring(2, 15),
-      nome: 'João',
-      cpf: '12345678900',
-      email: 'joj@email.com',
-      telefone: '11987654321',
-      senha: 123456,
-    }
-  ]; // simula um banco de dados temporário 
 
 router.get('/', async (req, res) => {
   return res.json("Olá, Mundo!")
@@ -44,44 +26,40 @@ router.get('/users', async (req, res) => {
   })
 
 // Rota para cadastrar um usuário
+
 router.post('/register', async (req, res) => {
-  const { nome, email, telefone, senha } = req.body;
-  
-    if (!nome || !email || !telefone || !senha) {
-      return res.status(400).json({ message: 'Todos os campos são obrigatórios!' });
+  const { nome, email, telefone, senha, cpf, tipo } = req.body;
+
+  if (!nome || !email || !telefone || !senha || !cpf || !tipo) {
+    return res.status(400).json({ message: 'Todos os campos são obrigatórios!' });
+  }
+
+  if (senha.length < 6) {
+    return res.status(400).json({ message: 'A senha deve ter pelo menos 6 caracteres.' });
+  }
+
+  try {
+    const [existe] = await connection.query(
+      'SELECT * FROM Usuario WHERE email = ? OR cpf = ?', [email, cpf]
+    );
+
+    if (existe.length > 0) {
+      return res.status(409).json({ message: 'Usuário já existe!' });
     }
 
-    if (senha.length < 6) {
-      return res.status(400).json({ message: 'A senha deve ter pelo menos 6 caracteres.' });
-    }
-  
-     // Verifica se o email já está cadastrado
-     const usuarioExistente = usersbd.find(user => user.email === email);
-  
-     if (usuarioExistente) {
-       return res.status(409).json({ message: 'Usuário já existe!' });
-     }
+    const hashSenha = await bcrypt.hash(senha, 10);
 
-    try {
-      const hashSenha = await bcrypt.hash(senha, 10);
-  
-      let novoUsuario = { 
-        id: Math.random().toString(36).substring(2, 15),
-        nome, 
-        email, 
-        telefone, 
-        senha: hashSenha 
-      };
+    await connection.query(
+      'INSERT INTO Usuario (cpf, nome, email, senha, telefone, tipo) VALUES (?, ?, ?, ?, ?, ?)',
+      [cpf, nome, email, hashSenha, telefone, tipo]
+    );
 
-      usersbd.push(novoUsuario);
-
-      return res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
-    } catch (err) {
-      console.error('Erro ao cadastrar:', err);
-      res.status(500).json({ message: 'Erro no servidor.' });
-    }
-  }) 
-  
+    return res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao cadastrar:', err);
+    return res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+});
   
   // Rota para atualizar um usuário
   router.put('/users/:id', async (req, res) => {

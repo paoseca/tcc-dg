@@ -1,20 +1,24 @@
 import { router } from "expo-router";
-import { ScrollView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { useState } from 'react';
+import { useState } from "react";
 import api from "../api/api";
+import { Picker } from "@react-native-picker/picker"; // Lembre-se de instalar: expo install @react-native-picker/picker
 
 export default function Register() {
-  // Estados para armazenar os dados do formulário
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [tipo, setTipo] = useState("comum");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [instrumentos, setInstrumentos] = useState("");
+  const [localizacao, setLocalizacao] = useState("");
+  const [descricao, setDescricao] = useState("");
 
-  // Função que realiza o cadastro
   const cadastrar = async () => {
-    if (!nome || !email || !telefone || !senha || !confirmarSenha) {
+    if (!nome || !email || !telefone || !senha || !confirmarSenha || !cpf) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
@@ -23,86 +27,141 @@ export default function Register() {
       alert("As senhas não coincidem.");
       return;
     }
-    
+
     try {
-      const response = await api.post('/register', {
+      await api.post("/register", {
         nome,
         email,
         telefone,
         senha,
+        cpf,
+        tipo,
       });
 
-      alert('Cadastro realizado com sucesso!');
-      router.push('/auth/login');
+      if (tipo === "musico") {
+        await api.post("/register-musico", {
+          cpf_usuario: cpf,
+          instrumentos,
+          localizacao,
+          descricao,
+        });
+      }
+
+      alert("Cadastro realizado com sucesso!");
+      router.push("/auth/login");
     } catch (error) {
       console.error(error);
-      alert('Erro ao cadastrar. Tente novamente.');
+      alert("Erro ao cadastrar. Tente novamente.");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Cabeçalho com animação */}
       <Animatable.View animation="fadeInLeft" delay={500} style={styles.cabecalho}>
         <Text style={styles.mensagem}>Cadastro</Text>
       </Animatable.View>
 
-      {/* Formulário com animação */}
-      <Animatable.View animation="fadeInUp" style={styles.containerFormulario}>
-        <Text style={styles.titulo}>Nome</Text>
-        <TextInput
-          placeholder="Digite seu nome"
-          style={styles.entrada}
-          value={nome}
-          onChangeText={setNome}
-        />
+      <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
+        <Animatable.View animation="fadeInUp" style={styles.containerFormulario}>
+          <Text style={styles.titulo}>Tipo de Usuário</Text>
+          <Picker selectedValue={tipo} onValueChange={(itemValue) => setTipo(itemValue)}>
+            <Picker.Item label="Comum" value="comum" />
+            <Picker.Item label="Músico" value="musico" />
+          </Picker>
 
-        <Text style={styles.titulo}>Email</Text>
-        <TextInput
-          placeholder="Digite seu email"
-          style={styles.entrada}
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
+          <Text style={styles.titulo}>Nome</Text>
+          <TextInput
+            style={styles.entrada}
+            value={nome}
+            onChangeText={setNome}
+            placeholder="Digite seu nome"
+          />
 
-        <Text style={styles.titulo}>Telefone</Text>
-        <TextInput
-          placeholder="Digite seu telefone"
-          style={styles.entrada}
-          keyboardType="phone-pad"
-          value={telefone}
-          onChangeText={setTelefone}
-        />
+          <Text style={styles.titulo}>CPF</Text>
+          <TextInput
+            style={styles.entrada}
+            value={cpf}
+            onChangeText={setCpf}
+            placeholder="Digite seu CPF"
+            keyboardType="numeric"
+          />
 
-        <Text style={styles.titulo}>Senha</Text>
-        <TextInput
-          placeholder="Digite sua senha"
-          style={styles.entrada}
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-        />
+          <Text style={styles.titulo}>Email</Text>
+          <TextInput
+            style={styles.entrada}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Digite seu email"
+            keyboardType="email-address"
+          />
 
-        <Text style={styles.titulo}>Confirmar Senha</Text>
-        <TextInput
-          placeholder="Confirme sua senha"
-          style={styles.entrada}
-          secureTextEntry
-          value={confirmarSenha}
-          onChangeText={setConfirmarSenha}
-        />
+          <Text style={styles.titulo}>Telefone</Text>
+          <TextInput
+            style={styles.entrada}
+            value={telefone}
+            onChangeText={setTelefone}
+            placeholder="Digite seu telefone"
+            keyboardType="phone-pad"
+          />
 
-        <TouchableOpacity style={styles.botao} onPress={cadastrar}>
-          <Text style={styles.textoBotao}>Cadastrar</Text>
-        </TouchableOpacity>
+          <Text style={styles.titulo}>Senha</Text>
+          <TextInput
+            style={styles.entrada}
+            value={senha}
+            onChangeText={setSenha}
+            placeholder="Digite sua senha"
+            secureTextEntry
+          />
 
-        <TouchableOpacity style={styles.linkLogin} onPress={() => router.push("/auth/login")}>
-          <Text style={styles.textoLogin}>
-            Já tem uma conta? <Text style={styles.linkLoginTexto}>Faça login</Text>
-          </Text>
-        </TouchableOpacity>
-      </Animatable.View>
+          <Text style={styles.titulo}>Confirmar Senha</Text>
+          <TextInput
+            style={styles.entrada}
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}
+            placeholder="Confirme sua senha"
+            secureTextEntry
+          />
+
+          {tipo === "musico" && (
+            <>
+              <Text style={styles.titulo}>Instrumentos</Text>
+              <TextInput
+                style={styles.entrada}
+                value={instrumentos}
+                onChangeText={setInstrumentos}
+                placeholder="Quais instrumentos você toca?"
+              />
+
+              <Text style={styles.titulo}>Localização</Text>
+              <TextInput
+                style={styles.entrada}
+                value={localizacao}
+                onChangeText={setLocalizacao}
+                placeholder="Sua cidade ou bairro"
+              />
+
+              <Text style={styles.titulo}>Descrição</Text>
+              <TextInput
+                style={[styles.entrada, { height: 80 }]}
+                value={descricao}
+                onChangeText={setDescricao}
+                placeholder="Fale um pouco sobre você"
+                multiline
+              />
+            </>
+          )}
+
+          <TouchableOpacity style={styles.botao} onPress={cadastrar}>
+            <Text style={styles.textoBotao}>Cadastrar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.linkLogin} onPress={() => router.push("/auth/login")}>
+            <Text style={styles.textoLogin}>
+              Já tem uma conta? <Text style={styles.linkLoginTexto}>Faça login</Text>
+            </Text>
+          </TouchableOpacity>
+        </Animatable.View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

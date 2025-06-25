@@ -167,6 +167,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/recuperar-senha', solicitarRedefinicaoSenha);
+//reseta e define
 router.post('/resetar-senha', resetarSenha);
 
 

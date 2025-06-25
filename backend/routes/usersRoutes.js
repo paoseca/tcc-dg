@@ -1,5 +1,6 @@
 import { Router } from "express";
 import connection from '../database/connection.js';
+import { solicitarRedefinicaoSenha, resetarSenha } from '../controllers/recuperarsenhaController.js';
 const router = Router();
 import bcrypt from 'bcrypt';
 
@@ -164,5 +165,10 @@ router.post('/login', async (req, res) => {
     return res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 });
+
+router.post('/recuperar-senha', solicitarRedefinicaoSenha);
+//reseta e define
+router.post('/resetar-senha', resetarSenha);
+
 
 export default router;

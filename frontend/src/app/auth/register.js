@@ -205,9 +205,15 @@ export default function Register() {
                 <Text style={styles.textoBotaoCadastro}>Cadastrar</Text>
               </TouchableOpacity>
 
+              <View style={styles.divisorContainer}>
+                <View style={styles.bolinha} />
+                <View style={styles.linha} />
+                <View style={styles.bolinha} />
+              </View>
+              
               <TouchableOpacity style={styles.linkLogin} onPress={() => router.push("/auth/login")}>
                 <Text style={styles.textoLogin}>
-                  Já tem uma conta? <Text style={styles.linkLoginTexto}>Faça login</Text>
+                  Já possui uma conta? <Text style={styles.linkLoginTexto}>Faça seu login</Text>
                 </Text>
               </TouchableOpacity>
             </Animatable.View>
@@ -271,7 +277,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   linkLoginTexto: {
-    color: "#871F78",
+    color: "#fff",
   },
   inputContainer: {
     backgroundColor: "rgba(38, 0, 0, 0.2)",
@@ -332,5 +338,24 @@ const styles = StyleSheet.create({
     pickerItem: {
     fontSize: 18,
     color: "#fff",
+  },
+   bolinha: {
+  width: 10,
+  height: 10,
+  borderRadius: 5,
+  backgroundColor: "#fff",
+  },
+  linha: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#fff",
+    opacity: 0.4,
+  },
+  divisorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    marginVertical: 20,
   },
 });
